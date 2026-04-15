@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: pneumonia-db
+    restart: always
+    environment:
+      POSTGRES_USER: pneumonia_user
+      POSTGRES_PASSWORD: pneumonia_password
+      POSTGRES_DB: pneumonia_detection
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: pneumonia-backend
+    restart: always
+    environment:
+      - DATABASE_URL=postgresql://pneumonia_user:pneumonia_password@db:5432/pneumonia_detection
+    ports:
+      - "5000:5000"
+    volumes:
+      - backend_uploads:/app/uploads
+      - ./chest_xray:/app/chest_xray
+    depends_on:
+      - db
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: pneumonia-frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+  backend_uploads:
