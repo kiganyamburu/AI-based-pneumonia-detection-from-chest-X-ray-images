@@ -6,7 +6,7 @@ db = SQLAlchemy()
 class PredictionRecord(db.Model):
     __tablename__ = 'predictions'
     
-    id = db.Column(db.Integer, primary key=True)
+    id = db.Column(db.Integer, primary_key=True)
     patient_name = db.Column(db.String(100), nullable=False)
     prediction = db.Column(db.String(20), nullable=False)
     confidence_normal = db.Column(db.Float, nullable=False)
