@@ -151,7 +151,6 @@ function App() {
   const loadHistoricalRecord = (record) => {
     setScanResult(record);
     setPatientName(record.patient_name);
-    // Use the stored images for display
     setPreviewUrl(`http://localhost:5000${record.original_image}`);
     setSelectedFile(null); // Clear active file upload state
     setActiveTab('dashboard');
@@ -187,7 +186,6 @@ function App() {
   }, []);
 
   const handlePrint = (record) => {
-    // Create a printable iframe or print window dynamically to support clean printing
     const printWindow = window.open('', '_blank');
     const isPneumonia = record.prediction === 'Pneumonia';
     const confidenceText = isPneumonia 
@@ -291,8 +289,6 @@ function App() {
           <script>
             window.onload = function() {
               window.print();
-              // Optionally close the window after printing
-              // window.close();
             }
           </script>
         </body>
@@ -309,38 +305,38 @@ function App() {
   });
 
   return (
-    <div className="min-h-screen pb-12">
-      {/* Premium Header */}
-      <header className="border-b border-[rgba(255,255,255,0.08)] bg-[#090d16b3] backdrop-blur-md sticky top-0 z-50 no-print">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-cyan-500/10">
-              <Activity className="w-5 h-5 text-white" />
+    <div className="app-wrapper">
+      {/* Premium Navigation Header */}
+      <header className="app-header">
+        <div className="header-container">
+          <div className="brand-section">
+            <div className="brand-logo">
+              <Activity />
             </div>
             <div>
-              <span className="font-bold text-lg text-white flex items-center gap-2">
-                PneumoScan <span className="text-xs bg-cyan-500/20 text-cyan-400 px-2 py-0.5 rounded-full font-semibold border border-cyan-500/30">AI CDSS</span>
+              <span className="brand-title">
+                PneumoScan <span className="brand-badge">AI CDSS</span>
               </span>
-              <p className="text-[11px] text-[#9ca3af]">Clinical Decision Support System</p>
+              <p className="brand-subtitle">Clinical Decision Support System</p>
             </div>
           </div>
           
-          <nav className="flex gap-1 bg-[#121824] p-1 rounded-lg border border-[rgba(255,255,255,0.05)]">
+          <nav className="nav-menu">
             <button 
               onClick={() => setActiveTab('dashboard')}
-              className={`px-4 py-1.5 rounded-md text-xs font-semibold flex items-center gap-2 transition-all ${activeTab === 'dashboard' ? 'bg-[#06b6d4] text-[#080b11] shadow-lg shadow-cyan-500/15' : 'text-[#9ca3af] hover:text-white'}`}
+              className={`nav-tab-btn ${activeTab === 'dashboard' ? 'active' : ''}`}
             >
-              <Sliders className="w-3.5 h-3.5" />
+              <Sliders size={15} />
               Analysis Dashboard
             </button>
             <button 
               onClick={() => setActiveTab('history')}
-              className={`px-4 py-1.5 rounded-md text-xs font-semibold flex items-center gap-2 transition-all ${activeTab === 'history' ? 'bg-[#06b6d4] text-[#080b11] shadow-lg shadow-cyan-500/15' : 'text-[#9ca3af] hover:text-white'}`}
+              className={`nav-tab-btn ${activeTab === 'history' ? 'active' : ''}`}
             >
-              <History className="w-3.5 h-3.5" />
+              <History size={15} />
               Patient Logs
               {history.length > 0 && (
-                <span className="bg-[rgba(0,0,0,0.15)] text-[10px] px-1.5 py-0.5 rounded-full font-bold">
+                <span className="tab-badge">
                   {history.length}
                 </span>
               )}
@@ -350,148 +346,147 @@ function App() {
       </header>
 
       {/* Main View Area */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 no-print">
+      <main className="main-content">
         
         {/* Clinical Disclaimer Bar */}
-        <div className="mb-8 p-4 glass-card bg-amber-500/5 border-amber-500/20 flex items-start gap-3 rounded-2xl">
-          <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+        <div className="disclaimer-bar">
+          <AlertTriangle className="disclaimer-icon" size={20} />
           <div>
-            <h4 className="text-xs font-bold text-amber-500">Clinical Decision Support Tool Notice</h4>
-            <p className="text-xs text-[#9ca3af] mt-1 leading-relaxed">
+            <h4 className="disclaimer-title">Clinical Decision Support Tool Notice</h4>
+            <p className="disclaimer-text">
               This system is an AI decision-support utility trained to locate abnormalities on chest radiographs. It is designed to assist radiologists and physicians. It does not replace clinical evaluation or direct physical diagnostics, and must be validated by a licensed physician.
             </p>
           </div>
         </div>
 
         {activeTab === 'dashboard' ? (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <div className="dashboard-grid">
             
-            {/* Left Side: Patient Form & Image Upload (5 Columns) */}
-            <div className="lg:col-span-5 flex flex-col gap-6">
+            {/* Left Side: Patient Form & Image Upload */}
+            <div className="sidebar-col">
               
-              <div className="glass-card p-6 flex flex-col gap-5">
-                <div>
-                  <h3 className="font-bold text-base text-white">Patient Information</h3>
-                  <p className="text-xs text-[#9ca3af]">Enter details to register diagnostic case file</p>
+              <div className="case-card">
+                <div className="card-title-section">
+                  <h3 className="card-title">Patient Case Registration</h3>
+                  <p className="card-subtitle">Enter details to register diagnostic case file</p>
                 </div>
                 
-                <div className="flex flex-col gap-2">
-                  <label className="text-xs font-bold text-[#9ca3af]">Patient Name</label>
-                  <div className="relative">
-                    <User className="w-4 h-4 text-[#6b7280] absolute left-3 top-1/2 -translate-y-1/2" />
+                <div className="input-field">
+                  <label className="input-label">Patient Name</label>
+                  <div className="input-icon-wrapper">
+                    <User className="input-icon" />
                     <input 
                       type="text" 
                       placeholder="e.g. John Doe"
                       value={patientName}
                       onChange={(e) => setPatientName(e.target.value)}
-                      className="w-full bg-[#0d121f] border border-[rgba(255,255,255,0.08)] focus:border-cyan-500/50 rounded-xl py-2.5 pl-10 pr-4 text-xs text-white placeholder-[#4b5563] outline-none transition-all"
+                      className="text-input"
                     />
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-2">
-                  <label className="text-xs font-bold text-[#9ca3af]">Chest X-ray Image</label>
+                <div className="input-field">
+                  <label className="input-label">Chest X-ray Image</label>
                   
                   {/* Dropzone Container */}
                   <div 
                     onDragOver={handleDragOver}
                     onDrop={handleDrop}
-                    className="border border-dashed border-[rgba(255,255,255,0.12)] hover:border-cyan-500/40 bg-[#0d121f66] hover:bg-[#0d121fcc] rounded-xl p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-all min-h-48 group relative overflow-hidden"
+                    className="dropzone-container"
                   >
                     <input 
                       type="file" 
                       accept=".png, .jpg, .jpeg"
                       onChange={handleFileChange}
-                      className="absolute inset-0 opacity-0 cursor-pointer z-10"
+                      className="dropzone-file-input"
                     />
                     
                     {previewUrl ? (
-                      <div className="absolute inset-0 p-3 bg-[#0d121f] flex items-center justify-center">
+                      <div className="dropzone-preview">
                         <img 
                           src={previewUrl} 
                           alt="X-ray preview" 
-                          className="max-w-full max-h-full object-contain rounded-lg border border-[rgba(255,255,255,0.05)]"
                         />
-                        <div className="absolute bottom-4 left-1/2 -translate-y-0 -translate-x-1/2 bg-black/75 px-3 py-1.5 rounded-full text-[10px] text-cyan-400 font-semibold border border-cyan-500/25 flex items-center gap-1.5 backdrop-blur-sm shadow-lg">
-                          <CheckCircle className="w-3.5 h-3.5" />
+                        <div className="dropzone-preview-badge">
+                          <CheckCircle size={14} />
                           Image Selected
                         </div>
                       </div>
                     ) : (
                       <>
-                        <div className="w-12 h-12 rounded-full bg-[#121826] border border-[rgba(255,255,255,0.05)] flex items-center justify-center group-hover:scale-110 group-hover:border-cyan-500/30 transition-all duration-300">
-                          <Upload className="w-5 h-5 text-[#9ca3af] group-hover:text-cyan-400 transition-all" />
+                        <div className="dropzone-icon-box">
+                          <Upload size={20} />
                         </div>
-                        <span className="font-bold text-xs text-white mt-3">Drag & drop radiograph image</span>
-                        <p className="text-[10px] text-[#6b7280] mt-1.5">Supports PNG, JPG, JPEG up to 10MB</p>
+                        <span className="dropzone-title">Drag & drop radiograph image</span>
+                        <p className="dropzone-subtitle">Supports PNG, JPG, JPEG up to 10MB</p>
                       </>
                     )}
                   </div>
                 </div>
 
                 {errorMessage && (
-                  <div className="p-3.5 bg-red-500/10 border border-red-500/20 rounded-xl flex items-start gap-2.5">
-                    <ShieldAlert className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
-                    <span className="text-[11px] text-red-300 leading-normal">{errorMessage}</span>
+                  <div style={{
+                    padding: '12px 16px',
+                    background: 'rgba(244, 63, 94, 0.1)',
+                    border: '1px solid rgba(244, 63, 94, 0.2)',
+                    borderRadius: '10px',
+                    display: 'flex',
+                    gap: '10px',
+                    marginBottom: '20px'
+                  }}>
+                    <ShieldAlert style={{ color: '#f43f5e', flexShrink: 0 }} size={16} />
+                    <span style={{ fontSize: '11px', color: '#fda4af' }}>{errorMessage}</span>
                   </div>
                 )}
 
                 <button 
                   onClick={handleAnalyze}
                   disabled={isAnalyzing || !selectedFile}
-                  className={`w-full py-3 rounded-xl font-bold text-xs text-white flex items-center justify-center gap-2 shadow-lg transition-all ${
-                    !selectedFile 
-                      ? 'bg-slate-800 text-slate-500 border border-slate-700/50 cursor-not-allowed shadow-none' 
-                      : isAnalyzing 
-                        ? 'bg-[#151c2c] border border-cyan-500/20 text-cyan-400 cursor-wait'
-                        : 'bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 shadow-cyan-500/10 hover:shadow-cyan-500/20 hover:scale-[1.01] cursor-pointer'
-                  }`}
+                  className="btn-primary"
                 >
                   {isAnalyzing ? (
                     <>
-                      <RefreshCw className="w-4 h-4 animate-spin" />
-                      Analyzing Chest X-ray...
+                      <RefreshCw size={16} className="spin-animation" style={{ animation: 'spin 1.5s linear infinite' }} />
+                      Analyzing Case Radiograph...
                     </>
                   ) : (
                     <>
-                      <Activity className="w-4 h-4" />
+                      <Activity size={16} />
                       Run AI Diagnostic Scan
                     </>
                   )}
                 </button>
               </div>
 
-              {/* History quickview in Sidebar if history exists */}
+              {/* Sidebar Recent Log List */}
               {history.length > 0 && (
-                <div className="glass-card p-5 flex flex-col gap-4">
-                  <div className="flex justify-between items-center">
-                    <span className="font-bold text-xs text-white">Recent Records</span>
+                <div className="case-card">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+                    <span className="card-title">Recent Case Files</span>
                     <button 
                       onClick={() => setActiveTab('history')}
-                      className="text-[10px] font-bold text-cyan-400 hover:underline flex items-center gap-0.5"
+                      style={{ background: 'none', border: 'none', fontSize: '10px', fontWeight: 'bold', color: '#06b6d4', cursor: 'pointer' }}
                     >
-                      View All <ChevronRight className="w-3 h-3" />
+                      View All Logs
                     </button>
                   </div>
-                  <div className="flex flex-col gap-2">
+                  <div className="recent-logs-list">
                     {history.slice(0, 3).map((item) => (
                       <div 
                         key={item.id}
                         onClick={() => loadHistoricalRecord(item)}
-                        className="p-3 bg-[#0d121f66] hover:bg-[#0d121fcc] border border-[rgba(255,255,255,0.04)] hover:border-cyan-500/20 rounded-xl flex items-center justify-between cursor-pointer transition-all group"
+                        className="recent-log-item"
                       >
-                        <div className="flex items-center gap-2.5">
-                          <div className={`w-2 h-2 rounded-full ${item.prediction === 'Pneumonia' ? 'bg-rose-500 shadow-glow shadow-rose-500/50' : 'bg-emerald-500 shadow-glow shadow-emerald-500/50'}`}></div>
+                        <div className="recent-log-meta">
+                          <div className={`status-dot ${item.prediction === 'Pneumonia' ? 'pneumonia' : 'normal'}`}></div>
                           <div>
-                            <span className="font-bold text-xs text-white block group-hover:text-cyan-400 transition-all">{item.patient_name}</span>
-                            <span className="text-[10px] text-[#6b7280] block">{item.created_at.split(' ')[0]}</span>
+                            <span className="recent-log-name">{item.patient_name}</span>
+                            <span className="recent-log-date">{item.created_at.split(' ')[0]}</span>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${item.prediction === 'Pneumonia' ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'}`}>
-                            {item.prediction}
-                          </span>
-                        </div>
+                        <span className={`recent-log-tag ${item.prediction === 'Pneumonia' ? 'pneumonia' : 'normal'}`}>
+                          {item.prediction}
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -500,93 +495,83 @@ function App() {
 
             </div>
 
-            {/* Right Side: Scan Analysis Viewer & Results (7 Columns) */}
-            <div className="lg:col-span-7 flex flex-col gap-6">
+            {/* Right Side: Scan Analysis Viewer & Results */}
+            <div className="viewer-col">
               
               {scanResult ? (
-                <div className="glass-card p-6 flex flex-col gap-6">
+                <div className="case-card">
                   
-                  {/* Results Header block */}
-                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-[rgba(255,255,255,0.08)]">
+                  {/* Results Header */}
+                  <div className="results-header-block">
                     <div>
-                      <span className="text-[10px] text-cyan-400 font-semibold uppercase tracking-wider">Diagnostic Analysis Results</span>
-                      <h2 className="font-extrabold text-xl text-white mt-0.5">{scanResult.patient_name}</h2>
-                      <span className="text-[10px] text-[#6b7280] block mt-0.5">Date evaluated: {scanResult.created_at}</span>
+                      <span className="results-header-tag">Analysis Evaluation Report</span>
+                      <h2 className="results-header-title">{scanResult.patient_name}</h2>
+                      <span className="results-header-date">Scan timestamp: {scanResult.created_at}</span>
                     </div>
                     
-                    <div className="flex gap-2">
-                      <button 
-                        onClick={() => handlePrint(scanResult)}
-                        className="px-3.5 py-2 bg-[#121826] hover:bg-[#1a2235] border border-[rgba(255,255,255,0.08)] hover:border-[rgba(255,255,255,0.15)] rounded-xl text-xs font-bold text-white flex items-center gap-2 cursor-pointer transition-all"
-                      >
-                        <Download className="w-3.5 h-3.5 text-cyan-400" />
-                        Download Report
-                      </button>
-                    </div>
+                    <button 
+                      onClick={() => handlePrint(scanResult)}
+                      className="btn-report"
+                    >
+                      <Download size={14} />
+                      Download Case Report
+                    </button>
                   </div>
 
-                  {/* Prediction & Confidence Block */}
-                  <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-stretch">
+                  {/* Diagnostic Badge & Probabilities Grid */}
+                  <div className="diagnostic-conclusion-row">
                     
-                    {/* Diagnostic Badge (5 columns) */}
-                    <div className={`sm:col-span-5 rounded-2xl p-5 flex flex-col justify-center items-center text-center border ${
-                      scanResult.prediction === 'Pneumonia' 
-                        ? 'bg-rose-500/5 border-rose-500/20' 
-                        : 'bg-emerald-500/5 border-emerald-500/20'
-                    }`}>
-                      <span className="text-[10px] text-[#9ca3af] font-semibold uppercase tracking-wider">AI Conclusion</span>
-                      <div className={`font-black text-2xl mt-1 ${scanResult.prediction === 'Pneumonia' ? 'text-rose-400' : 'text-emerald-400'}`}>
+                    <div className={`diagnostic-conclusion-badge ${scanResult.prediction === 'Pneumonia' ? 'pneumonia' : 'normal'}`}>
+                      <span className="conclusion-label">AI Finding</span>
+                      <div className={`conclusion-val ${scanResult.prediction === 'Pneumonia' ? 'pneumonia' : 'normal'}`}>
                         {scanResult.prediction.toUpperCase()}
                       </div>
-                      <span className="text-[10px] text-[#6b7280] mt-1.5 max-w-44 leading-relaxed">
+                      <span className="conclusion-desc">
                         {scanResult.prediction === 'Pneumonia' 
-                          ? 'Abnormal density found in lung region.' 
-                          : 'Lungs appear clear with standard inflation.'}
+                          ? 'Warning: Radiographic density matching pneumonia patterns detected.' 
+                          : 'Clear: Standard healthy lung aeration patterns observed.'}
                       </span>
                     </div>
 
-                    {/* Confidence Bars (7 columns) */}
-                    <div className="sm:col-span-7 bg-[#0d121f] rounded-2xl p-5 border border-[rgba(255,255,255,0.05)] flex flex-col justify-between gap-3">
-                      <div>
-                        <span className="text-[10px] text-[#9ca3af] font-semibold uppercase tracking-wider block mb-2">Class Probabilities</span>
-                        
-                        {/* Normal bar */}
-                        <div className="flex flex-col gap-1 mb-2.5">
-                          <div className="flex justify-between text-[11px] font-bold">
-                            <span className="text-white">Normal Lung</span>
-                            <span className="text-emerald-400">{(scanResult.confidence_normal * 100).toFixed(1)}%</span>
-                          </div>
-                          <div className="w-full bg-[#1b2336] h-2 rounded-full overflow-hidden">
-                            <div 
-                              className="bg-emerald-500 h-full rounded-full transition-all duration-1000 ease-out" 
-                              style={{ width: `${scanResult.confidence_normal * 100}%` }}
-                            ></div>
-                          </div>
+                    <div className="probabilities-box">
+                      <span className="conclusion-label" style={{ marginBottom: '12px', display: 'block' }}>Probability Distribution</span>
+                      
+                      {/* Normal bar */}
+                      <div className="probability-bar-item">
+                        <div className="prob-meta">
+                          <span className="prob-name">Normal Lung Structure</span>
+                          <span className="prob-percentage normal">{(scanResult.confidence_normal * 100).toFixed(1)}%</span>
                         </div>
+                        <div className="prob-progress-bg">
+                          <div 
+                            className="prob-progress-fill normal" 
+                            style={{ width: `${scanResult.confidence_normal * 100}%` }}
+                          ></div>
+                        </div>
+                      </div>
 
-                        {/* Pneumonia bar */}
-                        <div className="flex flex-col gap-1">
-                          <div className="flex justify-between text-[11px] font-bold">
-                            <span className="text-white">Pneumonia Consolidation</span>
-                            <span className="text-rose-400">{(scanResult.confidence_pneumonia * 100).toFixed(1)}%</span>
-                          </div>
-                          <div className="w-full bg-[#1b2336] h-2 rounded-full overflow-hidden">
-                            <div 
-                              className="bg-rose-500 h-full rounded-full transition-all duration-1000 ease-out" 
-                              style={{ width: `${scanResult.confidence_pneumonia * 100}%` }}
-                            ></div>
-                          </div>
+                      {/* Pneumonia bar */}
+                      <div className="probability-bar-item">
+                        <div className="prob-meta">
+                          <span className="prob-name">Pneumonia Opacification</span>
+                          <span className="prob-percentage pneumonia">{(scanResult.confidence_pneumonia * 100).toFixed(1)}%</span>
+                        </div>
+                        <div className="prob-progress-bg">
+                          <div 
+                            className="prob-progress-fill pneumonia" 
+                            style={{ width: `${scanResult.confidence_pneumonia * 100}%` }}
+                          ></div>
                         </div>
                       </div>
                     </div>
 
                   </div>
 
-                  {/* Interactive Slider comparison view */}
-                  <div className="flex flex-col gap-2">
-                    <div className="flex justify-between items-center">
-                      <span className="font-bold text-xs text-white">Grad-CAM Spatial Mapping</span>
-                      <span className="text-[10px] text-[#9ca3af] italic">Slide image to overlay heatmaps</span>
+                  {/* Image Split Slider Viewer */}
+                  <div className="slider-view-section">
+                    <div className="slider-view-title-bar">
+                      <span className="slider-view-title">Grad-CAM Attentional Mapping</span>
+                      <span className="slider-view-tip">Drag slider to adjust transparent blend overlay</span>
                     </div>
 
                     <div 
@@ -595,7 +580,7 @@ function App() {
                       onTouchMove={handleTouchMove}
                       onMouseDown={(e) => { e.preventDefault(); setIsDragging(true); }}
                       onTouchStart={() => setIsDragging(true)}
-                      className="comparison-slider-container select-none"
+                      className="comparison-slider-container"
                     >
                       {/* Base Image: Original */}
                       <img 
@@ -605,40 +590,35 @@ function App() {
                         draggable="false"
                       />
 
-                      {/* Heatmap overlay image (revealed by slider width) */}
-                      <div 
-                        className="absolute inset-0 overflow-hidden" 
-                        style={{ width: `${sliderPosition}%` }}
-                      >
-                        <img 
-                          src={`http://localhost:5000${scanResult.heatmap_image}`} 
-                          alt="AI Heatmap" 
-                          className="comparison-image"
-                          style={{ width: containerRef.current?.getBoundingClientRect().width || '100%' }}
-                          draggable="false"
-                        />
-                      </div>
+                      {/* Heatmap Overlay (clipped via CSS clip-path) */}
+                      <img 
+                        src={`http://localhost:5000${scanResult.heatmap_image}`} 
+                        alt="AI Heatmap" 
+                        className="comparison-image"
+                        style={{ clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }}
+                        draggable="false"
+                      />
 
-                      {/* Sliding handle */}
+                      {/* Slider handler handle */}
                       <div 
                         className="slider-handle" 
                         style={{ left: `${sliderPosition}%` }}
                       ></div>
                     </div>
 
-                    <div className="flex justify-between text-[10px] text-[#6b7280] px-1">
-                      <span>Heatmap (AI Overlay)</span>
+                    <div className="slider-legend">
+                      <span>Heatmap Focus Overlay</span>
                       <span>Original Radiograph</span>
                     </div>
                   </div>
 
-                  {/* Guidance disclaimer box */}
-                  <div className="p-4 bg-[#121826] border border-[rgba(255,255,255,0.06)] rounded-xl flex items-start gap-3">
-                    <FileText className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
+                  {/* Clinical guidance box */}
+                  <div className="guidance-box">
+                    <FileText className="guidance-icon" size={16} />
                     <div>
-                      <h4 className="text-xs font-bold text-white">Interactive Interpretation</h4>
-                      <p className="text-[11px] text-[#9ca3af] mt-0.5 leading-relaxed">
-                        The red and orange regions in the heatmap highlight where the CNN models focused its convolutional filters to output the prediction. If Pneumonia is detected, verify if the highlighted heat zones map to clinical consolidation in the lung lobes.
+                      <h4 className="guidance-title">Attentional Heatmap Interpretation</h4>
+                      <p className="guidance-text">
+                        The highlighted colors (red/orange hotspots) pinpoint regions of localized radiological density that influenced the CNN model weights. Assess whether these regions correspond to clinical consolidate symptoms (alveolar exudate) in the lower/mid lobes.
                       </p>
                     </div>
                   </div>
@@ -646,25 +626,22 @@ function App() {
                 </div>
               ) : (
                 /* Empty State Card */
-                <div className="glass-card p-12 flex flex-col items-center justify-center text-center min-h-[460px] border-dashed border-[rgba(255,255,255,0.08)]">
-                  <div className="w-16 h-16 rounded-2xl bg-[#0f1524] border border-[rgba(255,255,255,0.05)] flex items-center justify-center mb-5 text-[#4b5563]">
-                    <Database className="w-7 h-7" />
+                <div className="empty-viewer-state">
+                  <div className="empty-viewer-icon">
+                    <Database size={24} />
                   </div>
-                  <h3 className="font-extrabold text-base text-white">Waiting for Radiograph Input</h3>
-                  <p className="text-xs text-[#9ca3af] mt-1.5 max-w-sm leading-relaxed">
-                    Upload a patient chest X-ray image on the left and run the AI scanner to generate predictions, calculate confidence margins, and produce the attention heatmaps.
+                  <h3 className="empty-viewer-title">Awaiting Diagnostic Input</h3>
+                  <p className="empty-viewer-desc">
+                    Register a patient profile and upload a chest radiograph image on the left, then trigger the AI model to perform the diagnostic segmentation scan.
                   </p>
                   
                   {history.length > 0 && (
-                    <div className="mt-8 flex items-center gap-2">
-                      <span className="text-xs text-[#6b7280]">Or load from archive:</span>
-                      <button 
-                        onClick={() => setActiveTab('history')}
-                        className="text-xs font-semibold text-cyan-400 hover:underline flex items-center gap-0.5 cursor-pointer"
-                      >
-                        Browse patient logs <ArrowRight className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
+                    <button 
+                      onClick={() => setActiveTab('history')}
+                      className="empty-viewer-action"
+                    >
+                      Browse registered logs archive <ArrowRight size={14} />
+                    </button>
                   )}
                 </div>
               )}
@@ -675,40 +652,35 @@ function App() {
         ) : (
           
           /* Logs/History Panel View */
-          <div className="glass-card p-6 flex flex-col gap-6">
+          <div className="case-card">
             
-            {/* Search/Filter block */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-4 border-b border-[rgba(255,255,255,0.08)]">
-              <div>
-                <h2 className="font-extrabold text-lg text-white">Patient Record Archives</h2>
-                <p className="text-xs text-[#9ca3af] mt-0.5">Manage and review previous diagnostic assessments</p>
+            {/* Header filters row */}
+            <div className="history-header-row">
+              <div className="history-title-group">
+                <h2>Patient Records Archive</h2>
+                <p>Lookup, print, or remove historical diagnostic evaluations</p>
               </div>
 
-              {/* Filters list */}
-              <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+              <div className="history-filters-bar">
                 {/* Search */}
-                <div className="relative flex-1 md:flex-none">
-                  <Search className="w-3.5 h-3.5 text-[#6b7280] absolute left-3 top-1/2 -translate-y-1/2" />
+                <div className="search-input-wrapper">
+                  <Search className="search-input-icon" />
                   <input 
                     type="text" 
                     placeholder="Search patient name..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full md:w-56 bg-[#0d121f] border border-[rgba(255,255,255,0.08)] focus:border-cyan-500/50 rounded-xl py-2 pl-9 pr-4 text-xs text-white placeholder-[#4b5563] outline-none transition-all"
+                    className="search-text-input"
                   />
                 </div>
 
                 {/* Filter prediction */}
-                <div className="flex bg-[#0d121f] border border-[rgba(255,255,255,0.08)] p-0.5 rounded-xl">
+                <div className="filter-btn-group">
                   {['ALL', 'NORMAL', 'PNEUMONIA'].map((cls) => (
                     <button
                       key={cls}
                       onClick={() => setFilterClass(cls)}
-                      className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all cursor-pointer ${
-                        filterClass === cls 
-                          ? 'bg-[#1e293b] text-white' 
-                          : 'text-[#9ca3af] hover:text-white'
-                      }`}
+                      className={`filter-btn ${filterClass === cls ? 'active' : ''}`}
                     >
                       {cls}
                     </button>
@@ -719,69 +691,61 @@ function App() {
 
             {/* Patients History Table */}
             {isLoadingHistory ? (
-              <div className="py-20 flex flex-col items-center justify-center gap-3 text-[#9ca3af]">
-                <RefreshCw className="w-8 h-8 animate-spin text-cyan-400" />
-                <span className="text-xs">Loading case archives...</span>
+              <div style={{ padding: '64px 0', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', color: '#9ca3af' }}>
+                <RefreshCw size={24} className="spin-animation" style={{ animation: 'spin 1.5s linear infinite', color: '#06b6d4' }} />
+                <span style={{ fontSize: '11px' }}>Querying case archives...</span>
               </div>
             ) : filteredHistory.length > 0 ? (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
+              <div className="table-scroll-wrapper">
+                <table className="history-table">
                   <thead>
-                    <tr className="border-b border-[rgba(255,255,255,0.06)] text-[10px] text-[#6b7280] font-bold uppercase tracking-wider">
-                      <th className="py-4 px-4">Patient Name</th>
-                      <th className="py-4 px-4">Evaluation Date</th>
-                      <th className="py-4 px-4">AI Prediction</th>
-                      <th className="py-4 px-4">Confidence Details</th>
-                      <th className="py-4 px-4 text-right">Actions</th>
+                    <tr>
+                      <th>Patient Name</th>
+                      <th>Evaluation Date</th>
+                      <th>AI Diagnostic Result</th>
+                      <th>Confidence Details</th>
+                      <th style={{ textAlign: 'right' }}>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {filteredHistory.map((item) => (
-                      <tr 
-                        key={item.id}
-                        className="border-b border-[rgba(255,255,255,0.04)] hover:bg-[#1118274d] text-xs transition-all"
-                      >
-                        <td className="py-4 px-4 font-bold text-white">{item.patient_name}</td>
-                        <td className="py-4 px-4 text-[#9ca3af]">{item.created_at}</td>
-                        <td className="py-4 px-4">
-                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded inline-flex items-center gap-1 ${
-                            item.prediction === 'Pneumonia' 
-                              ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' 
-                              : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                          }`}>
-                            <span className={`w-1.5 h-1.5 rounded-full ${item.prediction === 'Pneumonia' ? 'bg-rose-500' : 'bg-emerald-500'}`}></span>
+                      <tr key={item.id}>
+                        <td className="td-name">{item.patient_name}</td>
+                        <td>{item.created_at}</td>
+                        <td>
+                          <span className={`recent-log-tag ${item.prediction === 'Pneumonia' ? 'pneumonia' : 'normal'}`}>
                             {item.prediction}
                           </span>
                         </td>
-                        <td className="py-4 px-4 text-[#9ca3af] font-mono">
+                        <td className="td-confidence">
                           {item.prediction === 'Pneumonia' 
                             ? `Pneumonia: ${(item.confidence_pneumonia * 100).toFixed(1)}% | Normal: ${(item.confidence_normal * 100).toFixed(1)}%`
                             : `Normal: ${(item.confidence_normal * 100).toFixed(1)}% | Pneumonia: ${(item.confidence_pneumonia * 100).toFixed(1)}%`
                           }
                         </td>
-                        <td className="py-4 px-4 text-right">
-                          <div className="flex items-center justify-end gap-2">
+                        <td>
+                          <div className="actions-cell-wrapper">
                             <button
                               onClick={() => loadHistoricalRecord(item)}
-                              className="p-2 bg-[#121826] hover:bg-[#1d273d] text-cyan-400 hover:text-cyan-300 rounded-lg border border-[rgba(255,255,255,0.06)] cursor-pointer transition-all flex items-center gap-1"
-                              title="View Scan & Heatmaps"
+                              className="action-btn-item view"
+                              title="Load Scan Viewer"
                             >
-                              <Eye className="w-3.5 h-3.5" />
-                              <span className="text-[10px] font-bold pr-1">View</span>
+                              <Eye size={12} />
+                              View
                             </button>
                             <button
                               onClick={() => handlePrint(item)}
-                              className="p-2 bg-[#121826] hover:bg-[#1d273d] text-white rounded-lg border border-[rgba(255,255,255,0.06)] cursor-pointer transition-all"
+                              className="action-btn-item print"
                               title="Download Report"
                             >
-                              <FileText className="w-3.5 h-3.5 text-indigo-400" />
+                              <FileText size={12} />
                             </button>
                             <button
                               onClick={() => handleDeleteHistory(item.id)}
-                              className="p-2 bg-red-500/5 hover:bg-red-500/10 text-red-400 hover:text-red-300 rounded-lg border border-red-500/15 cursor-pointer transition-all"
+                              className="action-btn-item delete"
                               title="Delete Record"
                             >
-                              <Trash2 className="w-3.5 h-3.5" />
+                              <Trash2 size={12} />
                             </button>
                           </div>
                         </td>
@@ -792,18 +756,24 @@ function App() {
               </div>
             ) : (
               /* Empty Table state */
-              <div className="py-20 flex flex-col items-center justify-center text-center text-[#9ca3af] gap-2">
-                <Database className="w-10 h-10 text-[#4b5563]" />
-                <span className="font-bold text-sm text-white">No records found</span>
-                <p className="text-xs max-w-xs leading-relaxed">
-                  Try adjusting your search criteria or return to the dashboard to upload a new radiograph case.
-                </p>
+              <div className="empty-table-state">
+                <Database size={28} />
+                <h3>No Archive Records</h3>
+                <p>No historical scans match your current filter parameters.</p>
               </div>
             )}
 
           </div>
         )}
       </main>
+
+      {/* CSS Spin Keyframe injected directly */}
+      <style dangerouslySetInnerHTML={{__html: `
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}} />
     </div>
   );
 }
